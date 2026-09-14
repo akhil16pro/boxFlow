@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="color-scheme" content="dark" />
+  <title>Box Flow — physics sandbox</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='3' width='18' height='18' rx='5' fill='%23ffd166'/%3E%3Ccircle cx='9' cy='11' r='1.6' fill='%231f2937'/%3E%3Ccircle cx='15' cy='11' r='1.6' fill='%231f2937'/%3E%3Cpath d='M9 15.5c1.8 1.4 4.2 1.4 6 0' stroke='%231f2937' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-tool="select">
+  <canvas id="stage"></canvas>
+
+  <header class="brand" aria-hidden="true">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="#ffd166"/><circle cx="9" cy="11" r="1.6" fill="#1f2937"/><circle cx="15" cy="11" r="1.6" fill="#1f2937"/><path d="M9 15.5c1.8 1.4 4.2 1.4 6 0" stroke="#1f2937" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    <div class="brand-text">
+      <strong>Box Flow</strong>
+      <span>physics sandbox</span>
+    </div>
+  </header>
+
+  <nav id="toolbar" aria-label="Tools">
+    <div class="tool-group">
+      <button data-tool="select" title="Select / drag (V)">
+        <svg viewBox="0 0 24 24"><path d="M5.5 3.5l13.5 7.6-6 1.5-2.6 6z" fill="currentColor"/></svg>
+        <span>Select</span>
+      </button>
+      <button data-tool="belt" title="Conveyor belt (B)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="9" width="19" height="7" rx="3.5"/><circle cx="7" cy="12.5" r="1.6" fill="currentColor" stroke="none"/><circle cx="17" cy="12.5" r="1.6" fill="currentColor" stroke="none"/></svg>
+        <span>Belt</span>
+      </button>
+      <button data-tool="tube" title="Pneumatic tube (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8.5 3.5h7M12 3.5V10"/><path d="M12 10h6.5v7.5"/><path d="M15.5 20.5h6"/></svg>
+        <span>Tube</span>
+      </button>
+      <button data-tool="box" title="Drop boxes (X)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="9.4" cy="10.8" r="1.4" fill="currentColor" stroke="none"/><circle cx="14.6" cy="10.4" r="1.4" fill="currentColor" stroke="none"/><path d="M9.4 15.2c1.7 1.3 3.5 1.3 5.2 0" stroke-linecap="round" stroke-width="1.7"/></svg>
+        <span>Box</span>
+      </button>
+      <button data-tool="delete" title="Delete (D) — or right-click anything">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 4h4M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></svg>
+        <span>Delete</span>
+      </button>
+    </div>
+    <div class="tool-sep" aria-hidden="true"></div>
+    <div class="tool-group">
+      <button data-action="export" title="Export layout (Ctrl/Cmd+S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 19h14"/></svg>
+        <span>Export</span>
+      </button>
+      <button data-action="import" title="Import layout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 14V4m0 0L8 8m4-4l4 4M5 20h14"/></svg>
+        <span>Import</span>
+      </button>
+      <button data-action="clear" title="Clear everything">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4v4.5H9"/></svg>
+        <span>Clear</span>
+      </button>
+      <button data-action="sound" title="Sound on/off (M)">
+        <svg class="snd-on" viewBox="0 0 24 24" fill="none"><path d="M4 10v4h3l5 4.5v-13L7 10H4z" fill="currentColor"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg class="snd-off" viewBox="0 0 24 24" fill="none" hidden><path d="M4 10v4h3l5 4.5v-13L7 10H4z" fill="currentColor"/><path d="M15.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Sound</span>
+      </button>
+      <button data-action="help" title="How to play (H)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9.3 9.2a2.9 2.9 0 1 1 4.6 4.6c-.9.8-1.7 1.2-1.7 2.6"/><circle cx="12.4" cy="20" r="0.5" fill="currentColor" stroke="none"/></svg>
+        <span>Help</span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="chips" aria-label="Selected part controls"></div>
+
+  <div id="toast" role="status" hidden></div>
+
+  <div class="modal-backdrop" id="helpModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <h2 id="helpTitle">How to play</h2>
+      <ol class="help-steps">
+        <li><strong>Pick a tool</strong> — belt, tube or box — from the top bar.</li>
+        <li><strong>Click the stage</strong> to place it. Belts start switched off — click them to run.</li>
+        <li><strong>Tubes: click and drag</strong> to draw the whole pipe path in one gesture, then release. Click the last tile and drag again to extend it.</li>
+        <li><strong>Select what you placed</strong> and use the floating controls: belts get <em>− ▶ ◀ +</em>, tubes get direction arrows you can hold to grow their path.</li>
+        <li><strong>Drop boxes</strong> with the box tool and chain belts &amp; tubes into a little factory.</li>
+        <li><strong>Drag anything</strong> to rearrange. Right-click (or the trash tool) removes things.</li>
+      </ol>
+      <p class="help-note">
+        Shortcuts: <kbd>V</kbd> select · <kbd>B</kbd> belt · <kbd>T</kbd> tube · <kbd>X</kbd> box · <kbd>D</kbd> delete · <kbd>Esc</kbd> done · <kbd>M</kbd> sound · <kbd>Del</kbd> remove selected.
+        Everything autosaves in this browser; use Export / Import to share layouts.
+      </p>
+      <div class="modal-actions">
+        <button class="btn primary" data-close>Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="confirmModal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <h2 id="confirmTitle">Clear the whole factory?</h2>
+      <p>All belts, tubes and boxes will be removed. This can't be undone.</p>
+      <div class="modal-actions">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn danger" id="confirmClear">Clear all</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="importFile" accept="application/json,.json" hidden />
+
+  <footer class="credit">
+    core inspired by <a href="https://codepen.io/Ma5a/pen/yyaXzoB" target="_blank" rel="noopener">box flow system</a> by <a href="https://codepen.io/Ma5a" target="_blank" rel="noopener">ma5a</a>
+  </footer>
+
+  <script src="js/utils.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/demo-layout.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

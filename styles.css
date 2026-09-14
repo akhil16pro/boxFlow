@@ -1,0 +1,308 @@
+/* ---------- Box Flow UI ---------- */
+:root {
+  --bg0: #0b0f1d;
+  --panel: rgba(19, 25, 44, 0.86);
+  --panel-line: rgba(148, 163, 184, 0.16);
+  --text: #e2e8f0;
+  --muted: #8b98b8;
+  --accent: #ffd166;
+  --accent-ink: #221a04;
+  --danger: #ff6b6b;
+  --ok: #4ade80;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg0);
+  color: var(--text);
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  display: block;
+  touch-action: none;
+  cursor: grab;
+}
+body[data-tool="belt"] #stage,
+body[data-tool="tube"] #stage { cursor: copy; }
+body[data-tool="box"] #stage { cursor: cell; }
+body[data-tool="delete"] #stage { cursor: crosshair; }
+body.dragging #stage { cursor: grabbing; }
+
+/* ---------- brand ---------- */
+.brand {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+  z-index: 5;
+}
+.brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(255, 209, 102, 0.12);
+  border: 1px solid rgba(255, 209, 102, 0.25);
+  display: grid;
+  place-items: center;
+}
+.brand-logo svg { width: 22px; height: 22px; display: block; }
+.brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-text strong { font-size: 15px; letter-spacing: 0.02em; }
+.brand-text span { font-size: 11px; color: var(--muted); }
+
+/* ---------- toolbar ---------- */
+#toolbar {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 12px 32px rgba(3, 6, 16, 0.5);
+  z-index: 10;
+  max-width: calc(100vw - 24px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.tool-group { display: flex; gap: 4px; }
+.tool-sep { width: 1px; height: 30px; background: var(--panel-line); margin: 0 4px; }
+
+#toolbar button {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 12px;
+  padding: 7px 10px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+#toolbar button svg { width: 21px; height: 21px; display: block; }
+#toolbar button:hover { background: rgba(148, 163, 184, 0.12); color: var(--text); }
+#toolbar button:active { transform: scale(0.94); }
+#toolbar button.active {
+  background: rgba(255, 209, 102, 0.16);
+  border-color: rgba(255, 209, 102, 0.4);
+  color: var(--accent);
+}
+
+@media (hover: hover) {
+  #toolbar button::after,
+  .chip-set button::after {
+    content: attr(title);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(100% + 8px);
+    background: #0c1120;
+    border: 1px solid var(--panel-line);
+    color: var(--text);
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease 0.25s;
+  }
+  #toolbar button:hover::after,
+  .chip-set button:hover::after { opacity: 1; }
+}
+
+/* ---------- floating chips ---------- */
+#chips {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9;
+  pointer-events: none;
+  display: none;
+  will-change: transform;
+}
+#chips .chip-set {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 12px;
+  box-shadow: 0 8px 22px rgba(3, 6, 16, 0.45);
+  pointer-events: auto;
+}
+#chips::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(148, 163, 184, 0.35);
+}
+.chip-set button {
+  position: relative;
+  appearance: none;
+  border: none;
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text);
+  width: 30px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.12s ease, transform 0.08s ease;
+}
+.chip-set button svg { width: 18px; height: 18px; display: block; }
+.chip-set button:hover { background: rgba(148, 163, 184, 0.24); }
+.chip-set button:active { transform: scale(0.92); }
+.chip-set button.on { background: rgba(74, 222, 128, 0.22); color: var(--ok); }
+.chip-set button:disabled { opacity: 0.3; cursor: default; }
+.chip-set button.grow { color: var(--accent); }
+.chip-set button.shrink { color: var(--danger); }
+
+/* ---------- toast ---------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%) translateY(8px);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  color: var(--text);
+  padding: 9px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  box-shadow: 0 10px 26px rgba(3, 6, 16, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  z-index: 20;
+  max-width: 80vw;
+  text-align: center;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- modals ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 7, 16, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  z-index: 30;
+  animation: fadeIn 0.18s ease;
+}
+.modal {
+  width: min(480px, calc(100vw - 40px));
+  background: #131a2e;
+  border: 1px solid var(--panel-line);
+  border-radius: 20px;
+  padding: 26px 26px 22px;
+  box-shadow: 0 30px 80px rgba(2, 4, 12, 0.7);
+  animation: popIn 0.2s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+.modal h2 { font-size: 19px; margin-bottom: 14px; }
+.modal p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.help-steps {
+  margin: 4px 0 14px 20px;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.55;
+  display: grid;
+  gap: 7px;
+}
+.help-steps em { color: var(--accent); font-style: normal; }
+.help-note {
+  border-top: 1px solid var(--panel-line);
+  padding-top: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.help-note kbd {
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--panel-line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--text);
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+.btn {
+  appearance: none;
+  border: 1px solid var(--panel-line);
+  background: rgba(148, 163, 184, 0.1);
+  color: var(--text);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn:hover { background: rgba(148, 163, 184, 0.2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { background: #ffdd85; }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #2a0808; }
+.btn.danger:hover { background: #ff8585; }
+
+/* ---------- credit ---------- */
+.credit {
+  position: fixed;
+  right: 14px;
+  bottom: 12px;
+  font-size: 11.5px;
+  color: rgba(139, 152, 184, 0.75);
+  z-index: 5;
+  pointer-events: auto;
+}
+.credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.credit a:hover { color: var(--accent); }
+
+@keyframes popIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 640px) {
+  #toolbar { top: auto; bottom: 14px; }
+  .brand { top: 10px; left: 12px; }
+  #toolbar button { padding: 6px 8px 4px; }
+  #toolbar button span { display: none; }
+  .credit { display: none; }
+}
