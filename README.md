@@ -4,6 +4,12 @@ Box Flow is a small, playful physics sandbox. Build conveyor belts and pneumatic
 
 The whole game is static HTML, CSS, and JavaScript — there is no build step or backend.
 
+## Demo
+
+```text
+https://akhil16pro.github.io/boxFlow/
+```
+
 ## Run locally
 
 Open `index.html` directly, or serve the folder with any static file server:
@@ -37,18 +43,18 @@ http://192.168.0.22:4173
 
 ### Keyboard
 
-| Key | Action |
-|---|---|
-| `V` | Select tool |
-| `B` | Belt tool |
-| `T` | Tube tool |
-| `X` | Box tool |
-| `D` | Delete tool |
-| `Esc` | Select tool / cancel tube drawing |
-| `Del` / `Backspace` | Remove selected part |
-| `M` | Toggle sound |
-| `H` / `?` | Help |
-| `Cmd/Ctrl+S` | Export layout JSON |
+| Key                 | Action                            |
+| ------------------- | --------------------------------- |
+| `V`                 | Select tool                       |
+| `B`                 | Belt tool                         |
+| `T`                 | Tube tool                         |
+| `X`                 | Box tool                          |
+| `D`                 | Delete tool                       |
+| `Esc`               | Select tool / cancel tube drawing |
+| `Del` / `Backspace` | Remove selected part              |
+| `M`                 | Toggle sound                      |
+| `H` / `?`           | Help                              |
+| `Cmd/Ctrl+S`        | Export layout JSON                |
 
 ## Saving and sharing layouts
 
